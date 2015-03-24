@@ -11,7 +11,7 @@ var child_process = require("child_process");
 app.get('/', function(req, res) {
   res.sendFile(__dirname + '/index.html');
 });
-
+// TODO: make this an API
 io.on('connection', function(socket){
   console.log('a user connected.');
 

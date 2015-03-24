@@ -4,7 +4,7 @@ A webapp to stream terminal processes to the browser.
 
 To install:
 
-- `git clone [repo]`
+- `git clone https://github.com/dbh937/web-term.git`
 - `npm install`
 
 To run:
