@@ -5,18 +5,18 @@
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: monospace; }
-    form { background: #000; padding: 3px; position: fixed; bottom: 0; width: 100%; }
-    form input { border: 0; padding: 10px; width: 90%; margin-right: .5%; }
-    form button { width: 9%; background: rgb(130, 224, 255); border: none; padding: 10px; }
+    form { padding-left: 10px; width: 100%; }
+    form input { border: 0; padding: 10px; width: 90%; margin-right: .5%; outline-width: 0; font-family: monospace; font-size: 13px;}
+    form input:before {content: '>' margin: 0 1em}
     #messages { list-style-type: none; margin: 0; padding: 0; }
     #messages li { padding: 5px 10px; }
-    #messages li:nth-child(odd) { background: #eee; }
+    /*#messages li:nth-child(odd) { background: #eee; }*/
   </style>
 </head>
 <body>
 <ul id="messages"></ul>
 <form action="">
-  <input id="m" autocomplete="off" /><button>Send</button>
+  &gt;<input id="m" autocomplete="off" />
 </form>
 <script src="/socket.io/socket.io.js"></script>
 <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
@@ -25,6 +25,7 @@
   var socket = io();
 
   $('form').submit(function(){
+    $('#messages').append('<li>&gt; '+$('#m').val()+'</li>');
     socket.emit('command', $('#m').val());
     $('#m').val('');
     return false;
@@ -33,7 +34,11 @@
   socket.on('output', function(msg) {
     msg = msg.replace(/\n/g, '<br>');
     $('#messages').append('<li>'+msg+'</li>');
-  })
+  });
+
+  $(document).ready(function() {
+    $('input').focus();
+  });
 </script>
 </body>
 </html>

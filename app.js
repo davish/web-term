@@ -16,7 +16,7 @@ io.on('connection', function(socket){
   console.log('a user connected.');
 
   var term = child_process.spawn('bash');
-
+  socket.emit('output', "Welcome! Your term has loaded, and you can begin to execute code.");
   term.stdout.on('data', function(data) {
     socket.emit('output', data.toString());
   });
