@@ -1,5 +1,4 @@
 #Web-Term
----------
 
 A webapp to stream terminal processes to the browser.
 
