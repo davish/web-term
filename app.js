@@ -18,17 +18,14 @@ io.on('connection', function(socket){
   var term = child_process.spawn('bash');
 
   term.stdout.on('data', function(data) {
-    console.log(data.toString());
     socket.emit('output', data.toString());
   });
 
   term.on('exit', function(code) {
     socket.emit('output', "term exited with code "+ code);
-    socket.end();
   });
 
   socket.on('command', function(c) {
-    console.log('command: '+c);
     term.stdin.write(c + '\n');
   });
 
