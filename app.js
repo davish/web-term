@@ -60,6 +60,7 @@ io.on('connection', function(socket){
         socket.on('disconnect', function() {
           term.kill('SIGINT');
         });
+        socket.emit('output', "Your program is ready. Type away!");
       }
     });
   });
