@@ -8,7 +8,7 @@
     #term { padding-left: 10px; width: 100%; }
     #term input { border: 0; padding: 10px; width: 90%; margin-right: .5%; outline-width: 0; font-family: monospace; font-size: 13px;}
     #term input:before {content: '>' margin: 0 1em}
-    #messages { list-style-type: none; margin: 0; padding: 0; }
+    #messages { list-style-type: none; margin: 0; padding: 0; background-color: lightgray;}
     #messages li { padding: 5px 10px; }
     #messages li.error {color: red;}
     /*#messages li:nth-child(odd) { background: #eee; }*/
@@ -44,7 +44,6 @@
     if (cmd != 'ctrl-c') {
       socket.emit('command', cmd);
     } else {
-      console.log('ctrl-c!');
       socket.emit('ctrl-c')
     }
     $('#m').val('');

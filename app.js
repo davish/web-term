@@ -50,7 +50,7 @@ io.on('connection', function(socket){
         });
 
         socket.on('ctrl-c', function() {
-          term.stdin.write("\n\x03");
+          term.stdin.write("\n\x03\n");
         });
 
         socket.on('command', function(c) {
