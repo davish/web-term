@@ -1,10 +1,11 @@
 #Web-Term
 
-A webapp to stream terminal processes to the browser.
+A webapp to interactively stream java CLI programs to the browser.
 
 To install:
 
 - `git clone https://github.com/dbh937/web-term.git`
+- `cd web-term`
 - `npm install`
 
 To run:
@@ -12,6 +13,8 @@ To run:
 - `node app.js`
 
 1. Make a directory called `javafiles`, and one inside that called `compiled`.
+  - All within the web-term directory.
+  - TODO: generate these directories if they're not there in the first place.
 2. Put java source files into the first folder.
 3. Visit `localhost:3000` in a browser.
 4. Type in name of file in the input area and hit enter.
