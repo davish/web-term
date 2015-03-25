@@ -50,7 +50,7 @@ io.on('connection', function(socket){
         });
 
         socket.on('ctrl-c', function() {
-          term.stdin.write("\n\x03\n");
+          term.kill('SIGINT');
         });
 
         socket.on('command', function(c) {
@@ -58,6 +58,7 @@ io.on('connection', function(socket){
         });
 
         socket.on('disconnect', function() {
+          console.log('a user disconnected.');
           term.kill('SIGINT');
         });
         socket.emit('output', "Your program is ready. Type away!");
