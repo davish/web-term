@@ -6,7 +6,8 @@ var app = require('express')();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 
-var child_process = require("child_process");
+var spawn = require("child_process").spawn;
+var exec = require("child_process").exec;
 
 app.get('/', function(req, res) {
   res.sendFile(__dirname + '/index.html');
@@ -15,22 +16,52 @@ app.get('/', function(req, res) {
 io.on('connection', function(socket){
   console.log('a user connected.');
 
-  var term = child_process.spawn('bash');
-  socket.emit('output', "Welcome! Your term has loaded, and you can begin to execute code.");
-  term.stdout.on('data', function(data) {
-    socket.emit('output', data.toString());
-  });
+  var term = null;
 
-  term.on('exit', function(code) {
-    socket.emit('output', "term exited with code "+ code);
-  });
+  socket.on('new instance', function(params) {
+    if (term)
+      term.kill('SIGINT');
+    var filename = params.name;
+    if (filename.indexOf('.java') < 0)
+      filename = filename + '.java';
+    exec('javac -d compiled/ ' + filename, {cwd: __dirname + '/javafiles'}, function(error, stdout, stderr) {
+      /*
+       * stderr has the error string.
+       * error.code
+       *  1 if there's syntax errors.
+       *  2 if file not found.
+       * error = null if there's no error
+       */
+      if (error) {
+        socket.emit('output-err', stderr.toString());
+      } else {
+        term = spawn('java', [params.name], {cwd: __dirname + '/javafiles/compiled'});
 
-  socket.on('command', function(c) {
-    term.stdin.write(c + '\n');
-  });
+        term.stdout.on('data', function(data) {
+          socket.emit('output', data.toString());
+        });
 
-  socket.on('disconnect', function() {
-    term.stdin.end();
+        term.stderr.on('data', function(data) {
+          socket.emit('output-err', data.toString());
+        });
+
+        term.on('exit', function(code) {
+          socket.emit('output', "term exited with code "+ code);
+        });
+
+        socket.on('ctrl-c', function() {
+          term.stdin.write("\n\x03");
+        });
+
+        socket.on('command', function(c) {
+          term.stdin.write(c + '\n');
+        });
+
+        socket.on('disconnect', function() {
+          term.kill('SIGINT');
+        });
+      }
+    });
   });
 });
 

@@ -5,18 +5,22 @@
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: monospace; }
-    form { padding-left: 10px; width: 100%; }
-    form input { border: 0; padding: 10px; width: 90%; margin-right: .5%; outline-width: 0; font-family: monospace; font-size: 13px;}
-    form input:before {content: '>' margin: 0 1em}
+    #term { padding-left: 10px; width: 100%; }
+    #term input { border: 0; padding: 10px; width: 90%; margin-right: .5%; outline-width: 0; font-family: monospace; font-size: 13px;}
+    #term input:before {content: '>' margin: 0 1em}
     #messages { list-style-type: none; margin: 0; padding: 0; }
     #messages li { padding: 5px 10px; }
+    #messages li.error {color: red;}
     /*#messages li:nth-child(odd) { background: #eee; }*/
   </style>
 </head>
 <body>
 <ul id="messages"></ul>
-<form action="">
+<form id="term" action="">
   &gt;<input id="m" autocomplete="off" />
+</form>
+<form id="filename" action="">
+  <input id="n" />
 </form>
 <script src="/socket.io/socket.io.js"></script>
 <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
@@ -24,16 +28,37 @@
 <script>
   var socket = io();
 
-  $('form').submit(function(){
-    $('#messages').append('<li>&gt; '+$('#m').val()+'</li>');
-    socket.emit('command', $('#m').val());
+  $('#filename').submit(function() {
+    socket.emit('new instance', {
+      name: $('#n').val()
+    });
+    $(this).hide();
+    $('#term').focus();
+    return false;
+  });
+
+  $('#term').submit(function(){
+    var cmd = $('#m').val();
+    $('#messages').append('<li>&gt; ' + cmd + '</li>');
+    if (cmd != 'ctrl-c') {
+      socket.emit('command', cmd);
+    } else {
+      console.log('ctrl-c!');
+      socket.emit('ctrl-c')
+    }
     $('#m').val('');
     return false;
   });
 
   socket.on('output', function(msg) {
     msg = msg.replace(/\n/g, '<br>');
-    $('#messages').append('<li>'+msg+'</li>');
+    $('#messages').append('<li>'+msg.trim()+'</li>');
+  });
+
+  socket.on('output-err', function(msg) {
+    msg = msg.replace(/\n/g, '<br>');
+    msg = msg.replace(/\t/g, '  ');
+    $('#messages').append('<li class="error">'+msg+'</li>')
   });
 
   $(document).ready(function() {
